@@ -1,0 +1,5 @@
+.nextflow*
+.secrets/*
+work/*
+nextflow
+tmp/*
