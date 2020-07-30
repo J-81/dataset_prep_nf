@@ -1,14 +1,14 @@
 process GET_PDBSEQRES {
 
 	input:
-	  path x
+	  path pdb_seqres_url
 
 	output:
 	  path 'out.ent'
 
 	script:
 	"""
-	gunzip -c $x > out.ent
+	gunzip -c $pdb_seqres_url > out.ent
 	"""
 
 }
