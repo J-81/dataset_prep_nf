@@ -1,0 +1,6 @@
+channels:
+        - conda-forge
+dependencies:
+        - biopython=1.77
+        - python=3.6
+        - jupyter

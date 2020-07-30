@@ -3,3 +3,6 @@
 work/*
 nextflow
 tmp/*
+*.html.*
+*.html
+bin/notebooks/*
