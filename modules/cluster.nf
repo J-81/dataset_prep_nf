@@ -24,9 +24,11 @@ process STATS_ON_CLUSTERS {
 }
 
 
+
 process CLUSTER2MSA {
   conda 'envs/mmseqs2.yml'
-  echo true
+  echo false
+  label 'big_job'
 
   input:
     path queryFasta
@@ -47,3 +49,45 @@ process CLUSTER2MSA {
     mmseqs createtsv queryDB targetDB alignDB clusters.tsv --first-seq-as-repr
     """
 }
+
+
+process MAP2MSA {
+  conda 'envs/mmseqs2.yml'
+  echo false
+  label 'big_job'
+
+  input:
+    path queryFasta
+    path searchFasta
+  output:
+    path 'clusters.aln', emit: msa
+    path 'clusters.tsv', emit: cluster_ids
+  script:
+    """
+    mmseqs createdb $searchFasta targetDB
+    mmseqs createdb $queryFasta queryDB
+    mmseqs map queryDB targetDB alignDB tmp \\
+      --min-seq-id $params.min_seq_id \\
+      --max-seqs 999999 \\
+      -c $params.coverage \\
+      -a
+    mmseqs result2msa queryDB targetDB alignDB clusters.aln \\
+      --skip-query
+    mmseqs createtsv queryDB targetDB alignDB clusters.tsv --first-seq-as-repr
+    """
+}
+//
+// Splits the alignment file output by mmseqs into indivudual alignment files
+//
+/*
+process SPLIT_CLUSTERS {
+  input:
+    path mmseqsAln
+  output:
+    path "*.fasta", emit: clusters
+  script:
+    """
+    split
+
+}
+*/

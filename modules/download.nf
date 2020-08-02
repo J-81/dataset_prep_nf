@@ -47,3 +47,18 @@ process EXTRACT_SCOP_PDBIDS {
 		extract_scop_PDBIDs.py $x scopIDs.json
 		"""
 }
+
+process GET_DSSP {
+	maxForks 1 // Don't download more than one at a time
+	errorStrategy 'ignore' // DEBUG, ensure we download as much as possible
+	// echo true
+
+	input:
+		val pdb4id
+	output:
+		path "${pdb4id}.dssp"
+	script:
+		"""
+		wget -O ${pdb4id}.dssp 'ftp://ftp.cmbi.ru.nl/pub/molbio/data/dssp-from-mmcif/${pdb4id}.dssp'
+		"""
+}
