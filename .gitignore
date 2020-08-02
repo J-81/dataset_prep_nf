@@ -1,6 +1,7 @@
 .nextflow*
 .secrets/*
 work/*
+*_work/*
 nextflow
 tmp/*
 *.html.*
