@@ -9,6 +9,9 @@ process CLUSTER {
   script:
     """
     mmseqs easy-cluster $inputFasta cluster tmp --min-seq-id ${params.min_seq_id}
+
+    # cleanup to reduce file storage needs
+    rm -r tmp/*
     """
 }
 
@@ -52,16 +55,17 @@ process CLUSTER2MSA {
 
 
 process MAP2MSA {
+  errorStrategy 'ignore' //for debugging
   conda 'envs/mmseqs2.yml'
   echo false
   label 'big_job'
 
   input:
-    path queryFasta
+    tuple val(repID), path(queryFasta)
     path searchFasta
   output:
-    path 'clusters.aln', emit: msa
-    path 'clusters.tsv', emit: cluster_ids
+    tuple val(repID), path("${repID}_cluster.aln"), emit: msa
+    tuple val(repID), path("${repID}_cluster.tsv"), emit: tsv
   script:
     """
     mmseqs createdb $searchFasta targetDB
@@ -71,9 +75,15 @@ process MAP2MSA {
       --max-seqs 999999 \\
       -c $params.coverage \\
       -a
-    mmseqs result2msa queryDB targetDB alignDB clusters.aln \\
+    mmseqs result2msa queryDB targetDB alignDB preclusters.aln \\
       --skip-query
-    mmseqs createtsv queryDB targetDB alignDB clusters.tsv --first-seq-as-repr
+    mmseqs createtsv queryDB targetDB alignDB ${repID}_cluster.tsv --first-seq-as-repr
+
+    # REMOVE UNECESSARY ESCAPE CHARACTER AT END, THIS WOULD CAUSE ISSUES IN BIOPYTHON PARSING
+    tr -cd '\11\12\15\40-\176' < preclusters.aln > ${repID}_cluster.aln
+
+    # remove files, saves space in long run
+    rm -r targetDB* queryDB* alignDB* tmp*
     """
 }
 //
