@@ -1,0 +1,9 @@
+channels:
+        - bioconda
+        - conda-forge
+        - defaults
+dependencies:
+        - biopython=1.77
+        - python=3.6
+        - pandas=1.0.5
+        - jupyter
