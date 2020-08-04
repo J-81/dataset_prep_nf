@@ -7,3 +7,4 @@ tmp/*
 *.html.*
 *.html
 bin/notebooks/*
+slurm_logs/*
