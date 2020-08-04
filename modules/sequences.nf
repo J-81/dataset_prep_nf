@@ -4,8 +4,7 @@
 process EXTRACT_FASTA {
   conda 'envs/biopython.yml'
   input:
-    path idsJson
-    path dbFasta
+    tuple path(idsJson), path(dbFasta)
   output:
     path 'out.fasta', emit: fasta
     path 'missing.txt', emit: missing_records
