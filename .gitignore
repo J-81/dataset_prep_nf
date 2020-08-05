@@ -8,3 +8,4 @@ tmp/*
 *.html
 bin/notebooks/*
 slurm_logs/*
+db/*
