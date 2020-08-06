@@ -15,34 +15,66 @@ include { SSDIS_REFORMAT } from './modules/parser.nf'
 nextflow.enable.dsl=2
 
 //params.outdir = "results"
-workflow {
+workflow isswitch {
 	// data = Channel.fromPath(params.pdb_seqres_url)
 	// PDBCLUSTER( STRIP_NON_PROTEINS( GET_PDBSEQRES( params.pdb_seqres_url ) ) )
+	main:
+		GET_PDBSEQRES( params.pdb_seqres_url ) | STRIP_NON_PROTEINS
 
-	GET_PDBSEQRES( params.pdb_seqres_url ) | STRIP_NON_PROTEINS
+	  GET_SCOP( params.scop_version ) | EXTRACT_SCOP_PDBIDS \
+																	  | combine( STRIP_NON_PROTEINS.out ) \
+																		| SCOP_EXTRACT_FASTA
 
-  GET_SCOP( params.scop_version ) | EXTRACT_SCOP_PDBIDS \
-																  | combine( STRIP_NON_PROTEINS.out ) \
-																	| SCOP_EXTRACT_FASTA
+		// The map closure used returns [id, filepath] tuple
+		SCOP_EXTRACT_FASTA.out.fasta | SCOPCLUSTER
 
-	// The map closure used returns [id, filepath] tuple
-	SCOP_EXTRACT_FASTA.out.fasta | SCOPCLUSTER
+		SCOPCLUSTER.out.cluster_rep_fasta	| splitFasta( file: true ) \
+																 			| take( params.limiter ) \
+															 	 			| map { it -> [ it.splitFasta( record: [id:true] ).id[0] , it ] } \
+																 			| set { ch_scop_fasta }
 
-	SCOPCLUSTER.out.cluster_rep_fasta	| splitFasta( file: true ) \
-															 			| take( params.limiter ) \
-														 	 			| map { it -> [ it.splitFasta( record: [id:true] ).id[0] , it ] } \
-															 			| set { ch_scop_fasta }
 
-	MAP2MSA( ch_scop_fasta, STRIP_NON_PROTEINS.out )
+		MAP2MSA( ch_scop_fasta, STRIP_NON_PROTEINS.out )
 
-	GET_SSDIS | SSDIS_REFORMAT
+		GET_SSDIS | SSDIS_REFORMAT
 
-	OVERLAY_SSDIS( MAP2MSA.out.msa , SSDIS_REFORMAT.out ) | SSDIS_TOCSV
+		OVERLAY_SSDIS( MAP2MSA.out.msa , SSDIS_REFORMAT.out ) | SSDIS_TOCSV
 
-	MAP2MSA.out.msa | combine( SSDIS_TOCSV.out, by:0 ) \
-									| ISSWITCH \
-									| map { it[2] } \
-									| collect \
-									| AGGREGATE_ISSWITCH \
+		MAP2MSA.out.msa | combine( SSDIS_TOCSV.out, by:0 ) \
+										| ISSWITCH \
+										| map { it[2] } \
+										| collect \
+										| AGGREGATE_ISSWITCH \
+										| view
+
+	emit:
+		fasta = ch_scop_fasta
+}
+
+
+// Subworkflow for obtaining entropy values
+
+// TODO rewire subworkflows, maybe import if allowed
+// SETUP BLAST DATABASE MUST BE DOWNLOADED AND LOCATION SPECIFIED IN DATASET CONFIG
+include { BLASTP; PARSE_BLAST; ENTROPY } from './modules/alignments.nf'
+
+
+workflow entropy {
+	take: fasta
+	main:
+  	// GET_BLAST_DB | set { searchDB }
+	BLASTP( fasta ) | combine( fasta, by:0 ) \
+									| PARSE_BLAST \
+									| ENTROPY \
 									| view
+
+	//BLASTP( fasta ) | view
+
+}
+
+
+
+workflow {
+	main:
+		isswitch | entropy
 }
