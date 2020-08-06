@@ -9,3 +9,4 @@ tmp/*
 bin/notebooks/*
 slurm_logs/*
 db/*
+*__pycache__*
