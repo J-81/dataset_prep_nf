@@ -19,12 +19,10 @@ def main(filesToConcat, outputPath):
         print(f"Running {i+1} of {len(filesToConcat)}. {' '*8}", end="\r")
         if isinstance(full_df, pd.DataFrame): # first dataframe
             new_df = pd.read_csv(_file, index_col=0)
-            new_df["protein"] = _id
             full_df = pd.concat([full_df, new_df])
 
         else:
             full_df = pd.read_csv(_file, index_col=0)
-            full_df["protein"] = _id
 
     # write to file
     full_df.to_csv(outputPath)
