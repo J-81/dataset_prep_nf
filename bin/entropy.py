@@ -28,7 +28,7 @@ o_csv = sys.argv[3]
 ################################################################################
 # Define necessary functions
 ################################################################################
-def _map_to_classes(seq: str, encodeMap: dict, gaps: str = 'keep') -> str:
+def _map_to_classes(seq: str, encodeMap: dict, gaps: str = 'remove', X: str = 'remove') -> str:
     """ Remap characters in a sequence to classes
 
     Used for entropy amino acid classes
@@ -57,6 +57,21 @@ def _map_to_classes(seq: str, encodeMap: dict, gaps: str = 'keep') -> str:
                     newSeq += encodeMap[char]
                 else:
                     raise ValueError(f"gaps argument option {gaps} not implemented")
+
+            # deal with gap characters
+            if char == "X":
+                # remove gaps by default
+                if X == 'remove':
+                    continue
+                elif X == 'keep':
+                    newSeq += char
+                # requires encoding defined for gap character
+                elif X == 'convert':
+                    newSeq += encodeMap[char]
+                else:
+                    raise ValueError(f"gaps argument option {gaps} not implemented")
+
+
 
             else:
                 newSeq += encodeMap[char]

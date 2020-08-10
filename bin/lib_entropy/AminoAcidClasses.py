@@ -1,6 +1,11 @@
 # class key as follows:
 # a - aliphatic, r - aromatic, p - polar
 # t - postive, n - negative, s - special
+
+# handles U -> C -> a
+# B -> D -> n
+# J -> L -> a
+# Z -> E -> n
 E6 = {
  'A': 'a',
  'V': 'a',
@@ -21,9 +26,17 @@ E6 = {
  'D': 'n',
  'E': 'n',
  'G': 's',
- 'P': 's'
+ 'P': 's',
+ 'U': 'a',
+ 'B': 'n',
+ 'J': 'a',
+ 'Z': 'n'
  }
 
+# includes handling for U -> C
+# B -> D
+# J -> L
+# Z -> E
 E20 = {'A': 'A',
  'V': 'V',
  'L': 'L',
@@ -43,4 +56,9 @@ E20 = {'A': 'A',
  'D': 'D',
  'E': 'E',
  'G': 'G',
- 'P': 'P'}
+ 'P': 'P',
+ 'U': 'C',
+ 'B': 'D',
+ 'J': 'L',
+ 'Z': 'E'
+ }
