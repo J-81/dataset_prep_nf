@@ -14,15 +14,13 @@ include { SSDIS_REFORMAT } from './modules/parser.nf'
 
 nextflow.enable.dsl=2
 
-//params.outdir = "results"
-workflow isswitch {
-	// data = Channel.fromPath(params.pdb_seqres_url)
-	// PDBCLUSTER( STRIP_NON_PROTEINS( GET_PDBSEQRES( params.pdb_seqres_url ) ) )
+// includes limiter for trials and debugging
+workflow scopfasta {
 	main:
 		GET_PDBSEQRES( params.pdb_seqres_url ) | STRIP_NON_PROTEINS
 
-	  GET_SCOP( params.scop_version ) | EXTRACT_SCOP_PDBIDS \
-																	  | combine( STRIP_NON_PROTEINS.out ) \
+		GET_SCOP( params.scop_version ) | EXTRACT_SCOP_PDBIDS \
+																		| combine( STRIP_NON_PROTEINS.out ) \
 																		| SCOP_EXTRACT_FASTA
 
 		// The map closure used returns [id, filepath] tuple
@@ -31,44 +29,73 @@ workflow isswitch {
 		SCOPCLUSTER.out.cluster_rep_fasta	| splitFasta( file: true ) \
 																 			| take( params.limiter ) \
 															 	 			| map { it -> [ it.splitFasta( record: [id:true] ).id[0] , it ] } \
-																 			| set { ch_scop_fasta }
+																 			| set { fasta }
 
 
-		MAP2MSA( ch_scop_fasta, STRIP_NON_PROTEINS.out )
+	emit:
+		fasta
+
+}
+
+// TODO sanitize fasta by converting non-cannonical amino acids to canonnical equivalents
+// TODO add publishdir to final process
+workflow isswitch {
+	take: fasta
+	main:
+		GET_PDBSEQRES( params.pdb_seqres_url ) | STRIP_NON_PROTEINS
+
+		MAP2MSA( fasta, STRIP_NON_PROTEINS.out )
 
 		GET_SSDIS | SSDIS_REFORMAT
 
 		OVERLAY_SSDIS( MAP2MSA.out.msa , SSDIS_REFORMAT.out ) | SSDIS_TOCSV
 
 		MAP2MSA.out.msa | combine( SSDIS_TOCSV.out, by:0 ) \
-										| ISSWITCH \
+										| ISSWITCH
+
+										/* \
 										| map { it[2] } \
 										| collect \
-										| AGGREGATE_ISSWITCH \
-										| view
+										| AGGREGATE_ISSWITCH
+										*/
 
-	emit:
-		fasta = ch_scop_fasta
+		emit:
+			csv = ISSWITCH.out.full
+
 }
 
 
 // Subworkflow for obtaining entropy values
 
 // TODO rewire subworkflows, maybe import if allowed
-// SETUP BLAST DATABASE MUST BE DOWNLOADED AND LOCATION SPECIFIED IN DATASET CONFIG
+// NF_SETUP: BLAST DATABASE MUST BE DOWNLOADED AND LOCATION SPECIFIED IN DATASET CONFIG
 include { BLASTP; PARSE_BLAST; ENTROPY } from './modules/alignments.nf'
 
 
 workflow entropy {
 	take: fasta
 	main:
-  	// GET_BLAST_DB | set { searchDB }
-	BLASTP( fasta ) | combine( fasta, by:0 ) \
-									| PARSE_BLAST \
-									| ENTROPY \
-									| view
+		BLASTP( fasta ) | combine( fasta, by:0 ) \
+										| PARSE_BLAST \
+										| ENTROPY
 
-	//BLASTP( fasta ) | view
+	emit:
+		csv = ENTROPY.out
+
+
+}
+
+// Subworkflow for obtaining disorder propensity
+
+include { ISUNSTRUCT; PARSE_ISUNSTRUCT as PARSE } from './modules/disorder.nf'
+
+workflow disorder {
+	take: fasta
+	main:
+	  ISUNSTRUCT( fasta ) | PARSE
+
+	emit:
+		csv = PARSE.out
 
 }
 
@@ -76,5 +103,9 @@ workflow entropy {
 
 workflow {
 	main:
-		isswitch | entropy
+		scopfasta | set { fasta }
+
+		fasta | isswitch | take( 1 ) | view
+		fasta | disorder | take( 1 ) | view
+		fasta | entropy  | take( 1 ) | view
 }
