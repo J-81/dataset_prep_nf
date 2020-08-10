@@ -27,7 +27,7 @@ process STATS_ON_CLUSTERS {
 }
 
 
-
+// BUG: minor impact, trailing X in original sequence seems to dissapear in aligment, X's elsewhere appear as indels '-'
 process CLUSTER2MSA {
   conda 'envs/mmseqs2.yml'
   echo false
@@ -58,7 +58,7 @@ process MAP2MSA {
   errorStrategy 'ignore' //for debugging
   conda 'envs/mmseqs2.yml'
   echo false
-  label 'big_job'
+  // label 'big_job' associated speed up is not worth, compared to parallelization
 
   input:
     tuple val(repID), path(queryFasta)
