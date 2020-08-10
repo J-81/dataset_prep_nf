@@ -6,8 +6,7 @@ include { EXTRACT_FASTA as SCOP_EXTRACT_FASTA;
 					EXTRACT_IDS_FROM_CLUSTERTSV; } from './modules/sequences.nf'
 include { OVERLAY_SSDIS;
 					SSDIS_TOCSV;
-					ISSWITCH;
-					AGGREGATE_ISSWITCH } from './modules/isswitch.nf'
+					ISSWITCH } from './modules/isswitch.nf'
 include { STATS_ON_CLUSTERS } from './modules/analysis.nf'
 include { SSDIS_REFORMAT } from './modules/parser.nf'
 // include { STATS_ON_CLUSTERS as PDB_STATS_ON_CLUSTERS} from './modules/analysis.nf'
@@ -99,13 +98,35 @@ workflow disorder {
 
 }
 
-
+include{ JOIN as JOIN_1; JOIN as JOIN_2; CONCAT; TAG } from './modules/dataframes.nf'
 
 workflow {
 	main:
 		scopfasta | set { fasta }
 
-		fasta | isswitch | take( 1 ) | view
-		fasta | disorder | take( 1 ) | view
-		fasta | entropy  | take( 1 ) | view
+		fasta | disorder \
+					| map { it -> [ it[0], it[1] ] } \
+					| set { toJoin }
+
+		fasta | entropy  \
+					| map { it -> [ it[0], it[1] ] } \
+					| combine( toJoin, by: 0 ) \
+					| JOIN_1 \
+					| set { toJoin }
+
+		fasta | isswitch \
+					| map { it -> [ it[0], it[2] ] } \
+					| combine( toJoin, by: 0 ) \
+					| JOIN_2 \
+					| set { toConcat }
+
+		// Create column about chain and concatate to one dataset
+		toConcat | combine( channel.value( "protein" ) ) \
+						 | map { it -> [ it[2], it[0], it[1] ] } \
+						 | TAG \
+						 | toList \
+						 | CONCAT
+
+
+
 }
