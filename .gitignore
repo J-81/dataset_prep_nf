@@ -10,3 +10,4 @@ bin/notebooks/*
 slurm_logs/*
 db/*
 *__pycache__*
+bin/tools/*
