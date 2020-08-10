@@ -49,9 +49,9 @@ process ENTROPY {
   input:
     tuple val(fastaID), path(inputCSV)
   output:
-    tuple val(fastaID), path("${fastaID}.csv")
+    tuple val(fastaID), path("${fastaID}_entropy.csv")
   script:
     """
-    entropy.py $inputCSV $params.entropy_log_base ${fastaID}.csv
+    entropy.py $inputCSV $params.entropy_log_base ${fastaID}_entropy.csv
     """
 }
