@@ -127,7 +127,7 @@ def isSwitchPlus(primary_aln_path, ssdis_csv_path):
         print(save_these_columns)
         dataset_df = ssdis.filter(axis="columns", items=save_these_columns)
         # make column label generic for primary sequence
-        dataset_df = dataset_df.rename(axis="columns",mapper={seq_primary:"primary"})
+        dataset_df = dataset_df.rename(axis="columns",mapper={seq_primary:"Residue"})
         ssdis_datasets[seq.id] = dataset_df
 
 
@@ -142,5 +142,6 @@ dataset_dfs, full_df  = isSwitchPlus(primary_aln_path=i_primary,
 for seqID, df in dataset_dfs.items():
     if seqID == val_cluster_repID:
         o_dataset_path = f"{seqID}.csv"
+        df.index = pd.Series(range(1,len(df)+1), name="query_index")
         df.to_csv(o_dataset_path)
 full_df.to_csv(o_full_csv)
