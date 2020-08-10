@@ -1,17 +1,3 @@
-process AGGREGATE_ISSWITCH {
-  conda "envs/biopython_pandas.yml"
-
-  input:
-  path collectionOfCSV
-  output:
-  path "final.csv"
-  script:
-  """
-  mkdir toConcat
-  mv $collectionOfCSV toConcat/
-  aggregate_results.py toConcat final.csv
-  """
-}
 
 process OVERLAY_SSDIS {
   conda "envs/biopython.yml"
