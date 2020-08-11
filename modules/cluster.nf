@@ -58,7 +58,7 @@ process MAP2MSA {
   errorStrategy 'ignore' //for debugging
   conda 'envs/mmseqs2.yml'
   echo false
-  // label 'big_job' associated speed up is not worth, compared to parallelization
+  label 'longer'
 
   input:
     tuple val(repID), path(queryFasta)
