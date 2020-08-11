@@ -15,7 +15,7 @@ process GET_BLAST_DB {
 
 process BLASTP {
   conda 'envs/blast.yml'
-  label 'time_limit_2h'
+  label 'time_limit_2h','longer'
 
   input:
     tuple val(fastaID), path(inputFasta)
@@ -23,7 +23,7 @@ process BLASTP {
     tuple val(fastaID), path("${fastaID}_hits.xml"), emit: hitsXML
   script:
     """
-    blastp -query $inputFasta -db ${params.blastdbDir}/${params.blastdb} -max_target_seqs 10000 -num_threads $task.cpus -outfmt 5 -out ${fastaID}_hits.xml
+    blastp -query $inputFasta -db ${params.blastdbDir}/${params.blastdb} -max_target_seqs 1000 -num_threads $task.cpus -outfmt 5 -out ${fastaID}_hits.xml
     """
 }
 
