@@ -8,4 +8,6 @@ rsync -aP  --exclude=work \
             --exclude=results \
             --exclude=*.log* \
             --exclude=*.html* \
+            --exclude=.nextflow* \
+            --exclude=db* \
             . joribello@spartan01.sjsu.edu:/home/joribello/nextflow_workflows
