@@ -4,8 +4,8 @@
 #SBATCH --job-name="nf_wf_manage"
 #SBATCH -o slurm_logs/std_output_%j.out
 #SBATCH -e slurm_logs/std_error_%j.err
-#SBATCH -c 1
-#SBATCH --mem=8gb
+#SBATCH -c 4
+#SBATCH --mem=16gb
 #SBATCH --time=23:59:59
 #SBATCH -D /home/joribello/nextflow_workflows
 # #SBATCH --test-only
