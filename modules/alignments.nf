@@ -46,6 +46,8 @@ process PARSE_BLAST {
  */
 
 process ENTROPY {
+  conda 'envs/scipy1.yml'
+
   input:
     tuple val(fastaID), path(inputCSV)
   output:
