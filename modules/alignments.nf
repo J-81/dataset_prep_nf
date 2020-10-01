@@ -1,5 +1,5 @@
 process GET_BLAST_DB {
-  conda 'envs/blast.yml'
+  conda "${baseDir}/envs/blast.yml"
   // storeDir 'db/blast'
 
   output:
@@ -14,7 +14,7 @@ process GET_BLAST_DB {
 }
 
 process BLASTP {
-  conda 'envs/blast.yml'
+  conda "${baseDir}/envs/blast.yml"
   label 'time_limit_2h','longer'
 
   input:
@@ -28,7 +28,7 @@ process BLASTP {
 }
 
 process PARSE_BLAST {
-  conda "envs/biopython_pandas.yml"
+  conda "${baseDir}/envs/biopython_pandas.yml"
 
 
   input:
@@ -46,7 +46,7 @@ process PARSE_BLAST {
  */
 
 process ENTROPY {
-  conda 'envs/scipy1.yml'
+  conda "${baseDir}/envs/scipy1.yml"
 
   input:
     tuple val(fastaID), path(inputCSV)

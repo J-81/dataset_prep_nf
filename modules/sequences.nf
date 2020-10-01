@@ -2,7 +2,7 @@
 
 // TODO consider making the idsJson into a val
 process EXTRACT_FASTA {
-  conda 'envs/biopython.yml'
+  conda "${baseDir}/envs/biopython.yml"
   input:
     tuple path(idsJson), path(dbFasta)
   output:
@@ -15,7 +15,7 @@ process EXTRACT_FASTA {
 }
 
 process STRIP_NON_PROTEINS {
-	conda "envs/biopython.yml"
+	conda "${baseDir}/envs/biopython.yml"
 	input:
 	  path fasta
 	output:

@@ -1,7 +1,7 @@
 // Processes for handling dataframes
 
 process JOIN {
-  conda 'envs/biopython_pandas.yml'
+  conda "${baseDir}/envs/biopython_pandas.yml"
 
   input:
     tuple val(fastaID), path(csv1), path(csv2)
@@ -19,7 +19,7 @@ process JOIN {
  */
 
  process CONCAT {
-   conda "envs/biopython_pandas.yml"
+   conda "${baseDir}/envs/biopython_pandas.yml"
    publishDir "${params.publishdir}", mode: 'copy', overwrite: false
 
    input:
@@ -37,7 +37,7 @@ process JOIN {
  * e.g. Used for protein chain
  */
 process TAG {
-  conda 'envs/biopython_pandas.yml'
+  conda "${baseDir}/envs/biopython_pandas.yml"
 
   input:
     tuple val(col_name), val(col_content), path(i_csv)

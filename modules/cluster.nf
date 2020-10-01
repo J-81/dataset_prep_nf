@@ -1,5 +1,5 @@
 process CLUSTER {
-  conda "envs/mmseqs2.yml"
+  conda "${baseDir}/envs/mmseqs2.yml"
   input:
     path inputFasta
   output:
@@ -29,7 +29,7 @@ process STATS_ON_CLUSTERS {
 
 // BUG: minor impact, trailing X in original sequence seems to dissapear in aligment, X's elsewhere appear as indels '-'
 process CLUSTER2MSA {
-  conda 'envs/mmseqs2.yml'
+  conda "${baseDir}/envs/mmseqs2.yml"
   echo false
   label 'big_job'
 
@@ -56,7 +56,7 @@ process CLUSTER2MSA {
 
 process MAP2MSA {
   errorStrategy 'ignore' //for debugging
-  conda 'envs/mmseqs2.yml'
+  conda "${baseDir}/envs/mmseqs2.yml"
   echo false
   label 'longer'
 

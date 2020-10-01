@@ -1,6 +1,6 @@
 
 process OVERLAY_SSDIS {
-  conda "envs/biopython.yml"
+  conda "${baseDir}/envs/biopython.yml"
 
   input:
   tuple val(repID), path(inputMSA)
@@ -15,7 +15,7 @@ process OVERLAY_SSDIS {
 }
 
 process SSDIS_TOCSV {
-  conda "envs/biopython.yml"
+  conda "${baseDir}/envs/biopython.yml"
 
   input:
   tuple val(repID), path(ssdisMSA)
@@ -28,7 +28,7 @@ process SSDIS_TOCSV {
 }
 
 process ISSWITCH {
-  conda "envs/biopython_pandas.yml"
+  conda "${baseDir}/envs/biopython_pandas.yml"
 
   input:
   tuple val(repID), path(inputMSA), path(inputCSV) //inputMSA is primary alignment
