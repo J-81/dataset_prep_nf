@@ -1,6 +1,6 @@
 process GET_BLAST_DB {
   conda "${baseDir}/envs/blast.yml"
-  // storeDir 'db/blast'
+  storeDir "${blastdbStoreDir}/${$params.blastdb}"
 
   output:
     path "tmp/", emit: blastdbDir
@@ -9,7 +9,9 @@ process GET_BLAST_DB {
     """
     mkdir tmp
     cd tmp
-    update_blastdb.pl --source ncbi --decompress --blastdb_version 5 $params.blastdb
+    update_blastdb.pl --source ncbi \\
+      --decompress \\
+      --blastdb_version 5 $params.blastdb
     """
 }
 
@@ -18,12 +20,17 @@ process BLASTP {
   label 'time_limit_2h','longer'
 
   input:
-    tuple val(fastaID), path(inputFasta)
+    tuple val(fastaID), path(inputFasta), path(blastDB)
   output:
     tuple val(fastaID), path("${fastaID}_hits.xml"), emit: hitsXML
   script:
     """
-    blastp -query $inputFasta -db ${params.blastdbDir}/${params.blastdb} -max_target_seqs 1000 -num_threads $task.cpus -outfmt 5 -out ${fastaID}_hits.xml
+    blastp -query $inputFasta \\
+      -db $blastDB \\
+      -max_target_seqs 1000 \\
+      -num_threads $task.cpus \\
+      -outfmt 5 \\
+      -out ${fastaID}_hits.xml
     """
 }
 

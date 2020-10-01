@@ -68,13 +68,13 @@ workflow isswitch {
 
 // TODO rewire subworkflows, maybe import if allowed
 // NF_SETUP: BLAST DATABASE MUST BE DOWNLOADED AND LOCATION SPECIFIED IN DATASET CONFIG
-include { BLASTP; PARSE_BLAST; ENTROPY } from './modules/alignments.nf'
+include { BLASTP; PARSE_BLAST; GET_BLAST_DB; ENTROPY } from './modules/alignments.nf'
 
 
 workflow entropy {
 	take: fasta
 	main:
-		BLASTP( fasta ) | combine( fasta, by:0 ) \
+		BLASTP( fasta, GET_BLAST_DB ) | combine( fasta, by:0 ) \
 										| PARSE_BLAST \
 										| ENTROPY
 
