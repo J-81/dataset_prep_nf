@@ -1,6 +1,6 @@
 process GET_BLAST_DB {
   conda "${baseDir}/envs/blast.yml"
-  storeDir "${blastdbStoreDir}/${$params.blastdb}"
+  storeDir "${params.blastdbStoreDir}/${$params.blastdb}"
 
   output:
     path "tmp/", emit: blastdbDir
@@ -20,7 +20,8 @@ process BLASTP {
   label 'time_limit_2h','longer'
 
   input:
-    tuple val(fastaID), path(inputFasta), path(blastDB)
+    tuple val(fastaID), path(inputFasta)
+    path(blastDB)
   output:
     tuple val(fastaID), path("${fastaID}_hits.xml"), emit: hitsXML
   script:
