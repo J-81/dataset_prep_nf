@@ -64,7 +64,7 @@ process GET_DSSP {
 }
 
 process GET_MMCIF {
-	conda './envs/biopython.yml"
+	conda "${baseDir}/envs/biopython.yml"
 
   input:
   val pdb4id
@@ -85,7 +85,7 @@ process GET_MMCIF {
 }
 
 process GET_PDB {
-	conda './envs/biopython.yml"
+	conda "${baseDir}/envs/biopython.yml"
 
   input:
   val pdb4id
