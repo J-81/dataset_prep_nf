@@ -3,7 +3,7 @@ process GET_BLAST_DB {
   storeDir "${params.blastdbStoreDir}/${$params.blastdb}"
 
   output:
-    path "tmp/"
+    path "tmp/", emit: blastDB
 
   script:
     """

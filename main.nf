@@ -74,8 +74,7 @@ include { BLASTP; PARSE_BLAST; GET_BLAST_DB; ENTROPY } from './modules/alignment
 workflow entropy {
   take: fasta
   main:
-    GET_BLAST_DB
-    BLASTP( fasta, GET_BLAST_DB.out ) | combine( fasta, by:0 ) \
+    BLASTP( fasta, GET_BLAST_DB.out.blastDB ) | combine( fasta, by:0 ) \
                     | PARSE_BLAST \
                     | ENTROPY
 
