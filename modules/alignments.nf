@@ -1,14 +1,14 @@
 process GET_BLAST_DB {
   conda "${baseDir}/envs/blast.yml"
-  storeDir "${params.blastdbStoreDir}/${params.blastdb}"
+  storeDir "${params.blastdbStoreDir}"
 
   output:
-    path "tmp", emit: blastDB
+    path "${params.blastdb}", emit: blastDB
 
   script:
     """
-    mkdir tmp
-    cd tmp
+    mkdir ${params.blastdb}
+    cd ${params.blastdb}
     update_blastdb.pl --source ncbi \\
       --decompress \\
       --blastdb_version 5 \\
