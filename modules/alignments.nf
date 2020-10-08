@@ -1,9 +1,9 @@
 process GET_BLAST_DB {
   conda "${baseDir}/envs/blast.yml"
-  storeDir "${params.blastdbStoreDir}/${$params.blastdb}"
+  publishDir "${params.blastdbStoreDir}/${params.blastdb}", mode: 'copy'
 
   output:
-    path "tmp/", emit: blastDB
+    path "tmp", emit: blastDB
 
   script:
     """
@@ -11,7 +11,8 @@ process GET_BLAST_DB {
     cd tmp
     update_blastdb.pl --source ncbi \\
       --decompress \\
-      --blastdb_version 5 $params.blastdb
+      --blastdb_version 5 \\
+      $params.blastdb
     """
 }
 
@@ -27,7 +28,7 @@ process BLASTP {
   script:
     """
     blastp -query $inputFasta \\
-      -db $blastDB \\
+      -db $blastDB/${params.blastdb} \\
       -max_target_seqs 1000 \\
       -num_threads $task.cpus \\
       -outfmt 5 \\
