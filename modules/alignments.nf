@@ -1,6 +1,6 @@
 process GET_BLAST_DB {
   conda "${baseDir}/envs/blast.yml"
-  storeDir "${params.blastdbStoreDir}/${params.blastdb}", mode: 'copy'
+  storeDir "${params.blastdbStoreDir}/${params.blastdb}"
 
   output:
     path "tmp", emit: blastDB
