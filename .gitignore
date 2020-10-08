@@ -11,4 +11,3 @@ slurm_logs/*
 db/*
 *__pycache__*
 bin/tools/*
-bin/IsUnstruct
