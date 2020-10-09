@@ -1,19 +1,22 @@
 process GET_PDBSEQRES {
+  storeDir "${params.defaultStoreDir}/rcsb"
 
 	input:
 	  path pdb_seqres_url
 
 	output:
-	  path 'out.ent'
+	  path 'pdb_seqres.fasta'
 
 	script:
 	"""
-	gunzip -c $pdb_seqres_url > out.ent
+	gunzip -c $pdb_seqres_url > pdb_seqres.fasta
 	"""
 
 }
 
 process GET_SCOP {
+  storeDir "${params.defaultStoreDir}/scop"
+
 	input:
 		val scop_version
 	output:
