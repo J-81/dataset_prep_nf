@@ -109,6 +109,8 @@ process GET_PDB {
 }
 
 process GET_SSDIS {
+  storeDir "${params.defaultStoreDir}/rcsb"
+
   output:
   path "ss_dis.txt", emit: ssdis
 	script:
