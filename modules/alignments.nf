@@ -1,34 +1,43 @@
 process GET_BLAST_DB {
-  conda 'envs/blast.yml'
-  // storeDir 'db/blast'
+  conda "${baseDir}/envs/blast.yml"
+  publishDir "${params.blastdbStoreDir}/${params.blastdb}", mode: 'copy'
 
   output:
-    path "tmp/", emit: blastdbDir
+    path "tmp", emit: blastDB
 
   script:
     """
     mkdir tmp
     cd tmp
-    update_blastdb.pl --source ncbi --decompress --blastdb_version 5 $params.blastdb
+    update_blastdb.pl --source ncbi \\
+      --decompress \\
+      --blastdb_version 5 \\
+      $params.blastdb
     """
 }
 
 process BLASTP {
-  conda 'envs/blast.yml'
+  conda "${baseDir}/envs/blast.yml"
   label 'time_limit_2h','longer'
 
   input:
     tuple val(fastaID), path(inputFasta)
+    path(blastDB)
   output:
     tuple val(fastaID), path("${fastaID}_hits.xml"), emit: hitsXML
   script:
     """
-    blastp -query $inputFasta -db ${params.blastdbDir}/${params.blastdb} -max_target_seqs 1000 -num_threads $task.cpus -outfmt 5 -out ${fastaID}_hits.xml
+    blastp -query $inputFasta \\
+      -db $blastDB/${params.blastdb} \\
+      -max_target_seqs 1000 \\
+      -num_threads $task.cpus \\
+      -outfmt 5 \\
+      -out ${fastaID}_hits.xml
     """
 }
 
 process PARSE_BLAST {
-  conda "envs/biopython_pandas.yml"
+  conda "${baseDir}/envs/biopython_pandas.yml"
 
 
   input:
@@ -46,7 +55,7 @@ process PARSE_BLAST {
  */
 
 process ENTROPY {
-  conda 'envs/scipy1.yml'
+  conda "${baseDir}/envs/scipy1.yml"
 
   input:
     tuple val(fastaID), path(inputCSV)

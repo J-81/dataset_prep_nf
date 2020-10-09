@@ -1,5 +1,5 @@
 process STATS_ON_CLUSTERS {
-  conda "envs/data-viz.yml"
+  conda "${baseDir}/envs/data-viz.yml"
   input:
     path clusterTSV
   output:

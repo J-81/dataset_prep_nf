@@ -1,5 +1,5 @@
 process SSDIS_REFORMAT {
-  conda "envs/biopython.yml"
+  conda "${baseDir}/envs/biopython.yml"
   label "big_job"
 
   input:

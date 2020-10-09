@@ -29,7 +29,7 @@ process ISUNSTRUCT {
  */
 
 process PARSE_ISUNSTRUCT {
-  conda 'envs/biopython_pandas.yml' // TODO: create only pandas environment 
+  conda "${baseDir}/envs/biopython_pandas.yml" // TODO: create only pandas environment 
 
   input:
     tuple val(fastaID), path(inputIUL)
