@@ -1,8 +1,6 @@
 include { GET_PDBSEQRES;  GET_SCOP; EXTRACT_SCOP_PDBIDS; GET_PDB; GET_SSDIS } from './modules/download.nf'
 include { CLUSTER2MSA; MAP2MSA } from './modules/cluster.nf'
-include { CLUSTER as SCOPCLUSTER; } from './modules/cluster.nf' addParams(min_seq_id: params.scop_min_seq_id)
-include { EXTRACT_FASTA as SCOP_EXTRACT_FASTA;
-          STRIP_NON_PROTEINS;
+include { STRIP_NON_PROTEINS;
           EXTRACT_IDS_FROM_CLUSTERTSV; } from './modules/sequences.nf'
 include { OVERLAY_SSDIS;
           SSDIS_TOCSV;
@@ -13,28 +11,7 @@ include { SSDIS_REFORMAT } from './modules/parser.nf'
 
 nextflow.enable.dsl=2
 
-// includes limiter for trials and debugging
-workflow scopfasta {
-  main:
-    GET_PDBSEQRES( params.pdb_seqres_url ) | STRIP_NON_PROTEINS
-
-    GET_SCOP( params.scop_version ) | EXTRACT_SCOP_PDBIDS \
-                                    | combine( STRIP_NON_PROTEINS.out ) \
-                                    | SCOP_EXTRACT_FASTA
-
-    // The map closure used returns [id, filepath] tuple
-    SCOP_EXTRACT_FASTA.out.fasta | SCOPCLUSTER
-
-    SCOPCLUSTER.out.cluster_rep_fasta  | splitFasta( file: true ) \
-                                       | take( params.limiter ) \
-                                        | map { it -> [ it.splitFasta( record: [id:true] ).id[0] , it ] } \
-                                       | set { fasta }
-
-
-  emit:
-    fasta
-
-}
+include { scopFasta } from './subworkflows/scop.nf'
 
 // TODO sanitize fasta by converting non-cannonical amino acids to canonnical equivalents
 // TODO add publishdir to final process
@@ -103,7 +80,7 @@ include{ JOIN as JOIN_1; JOIN as JOIN_2; CONCAT; TAG } from './modules/dataframe
 
 workflow {
   main:
-    scopfasta | set { fasta }
+    scopFasta | set { fasta }
 
     fasta | disorder \
           | map { it -> [ it[0], it[1] ] } \
