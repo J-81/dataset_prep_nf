@@ -9,8 +9,10 @@
 #SBATCH --time=23:59:59
 # #SBATCH --test-only
 
-export TOWER_ACCESS_TOKEN=7e38ad64660cf92608d67a9425562bc55722d54c
-export NXF_VER=20.07.1
 
-
-nextflow run main.nf -profile sjsu_slurm -c config/dataset_v1.config -resume -with-tower --limiter 800 -w /home/joribello/scopDS/scopDB_v2/work
+nextflow pull J-81/dataset_prep_nf
+nextflow run J-81/dataset_prep_nf \
+  -r dev \
+  -profile test \
+  -with-tower \
+  -resume
