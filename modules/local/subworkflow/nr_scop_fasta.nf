@@ -6,7 +6,7 @@ include { EXTRACT_FASTA; STRIP_NON_PROTEINS; EXTRACT_IDS_FROM_CLUSTERTSV; } from
 
 
 // includes limiter for trials and debugging
-workflow scopFasta {
+workflow NR_SCOP_FASTA {
   main:
     GET_PDBSEQRES( params.pdb_seqres_url ) | STRIP_NON_PROTEINS
 
