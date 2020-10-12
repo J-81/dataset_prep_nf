@@ -1,3 +1,16 @@
+#!/usr/bin/env nextflow
+/*
+========================================================================================
+                         J-81/dataset_prep_nf
+========================================================================================
+ J-81/dataset_prep_nf Dataset Prep Pipeline.
+ #### Homepage / Documentation
+ https://github.com/J-81/dataset_prep_nf
+----------------------------------------------------------------------------------------
+*/
+
+nextflow.enable.dsl = 2
+
 include { GET_PDBSEQRES;  GET_SCOP; EXTRACT_SCOP_PDBIDS; GET_PDB; GET_SSDIS } from './modules/download.nf'
 include { CLUSTER2MSA; MAP2MSA } from './modules/cluster.nf'
 include { STRIP_NON_PROTEINS;
@@ -9,9 +22,13 @@ include { STATS_ON_CLUSTERS } from './modules/analysis.nf'
 include { SSDIS_REFORMAT } from './modules/parser.nf'
 // include { STATS_ON_CLUSTERS as PDB_STATS_ON_CLUSTERS} from './modules/analysis.nf'
 
-nextflow.enable.dsl=2
+////////////////////////////////////////////////////
+/* --    IMPORT LOCAL MODULES/SUBWORKFLOWS     -- */
+////////////////////////////////////////////////////
 
-include { scopFasta } from './subworkflows/scop.nf'
+//include { CAT_FASTQ                   } from './modules/local/process/cat_fastq'
+
+include { NR_SCOP_FASTA               } from './subworkflows/nr_scop_fasta'
 
 // TODO sanitize fasta by converting non-cannonical amino acids to canonnical equivalents
 // TODO add publishdir to final process
