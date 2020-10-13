@@ -72,7 +72,7 @@ workflow {
           | JOIN_1 \
           | set { toJoin }
 
-    fasta | isswitch \
+    fasta | ISWITCH \
           | map { it -> [ it[0], it[2] ] } \
           | combine( toJoin, by: 0 ) \
           | JOIN_2 \
