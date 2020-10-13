@@ -20,27 +20,8 @@ nextflow.enable.dsl = 2
 
 include { NR_SCOP_FASTA               } from './modules/local/subworkflow/nr_scop_fasta'
 include { IS_SWITCH               } from './modules/local/subworkflow/is_switch'
+include { SEQ_ENTROPY                 } from './modules/local/subworkflow/entropy'
 
-// Subworkflow for obtaining entropy values
-
-// TODO rewire subworkflows, maybe import if allowed
-// NF_SETUP: BLAST DATABASE MUST BE DOWNLOADED AND LOCATION SPECIFIED IN DATASET CONFIG
-include { BLASTP; PARSE_BLAST; GET_BLAST_DB; ENTROPY } from './modules/local/process/alignments.nf'
-
-
-workflow entropy {
-  take: fasta
-  main:
-    GET_BLAST_DB | view
-    BLASTP( fasta, GET_BLAST_DB.out.blastDB ) | combine( fasta, by:0 ) \
-                    | PARSE_BLAST \
-                    | ENTROPY
-
-  emit:
-    csv = ENTROPY.out
-
-
-}
 
 // Subworkflow for obtaining disorder propensity
 
@@ -66,7 +47,7 @@ workflow {
           | map { it -> [ it[0], it[1] ] } \
           | set { toJoin }
 
-    fasta | entropy  \
+    fasta | SEQ_ENTROPY  \
           | map { it -> [ it[0], it[1] ] } \
           | combine( toJoin, by: 0 ) \
           | JOIN_1 \
