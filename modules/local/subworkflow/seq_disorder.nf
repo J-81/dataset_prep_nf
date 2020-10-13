@@ -2,7 +2,7 @@
 
 include { ISUNSTRUCT; PARSE_ISUNSTRUCT as PARSE } from '../process/disorder.nf'
 
-workflow disorder {
+workflow SEQ_DISORDER {
   take: fasta
   main:
     ISUNSTRUCT( fasta ) | PARSE
