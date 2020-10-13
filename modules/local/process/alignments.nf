@@ -19,21 +19,35 @@ process GET_BLAST_DB {
 process BLASTP {
   conda "${baseDir}/envs/blast.yml"
   label 'time_limit_2h','longer'
+  // if using remote blast, limit to 2 at a time to be
+  //   a responsible NCBI shared resource user!
+  if ( !params.blastLocal ) { maxForks = 2 }
 
   input:
     tuple val(fastaID), path(inputFasta)
-    path(blastDB)
+    path(blastDB) // when using remote blast, a dummy file should be supplied
   output:
     tuple val(fastaID), path("${fastaID}_hits.xml"), emit: hitsXML
   script:
-    """
-    blastp -query $inputFasta \\
-      -db $blastDB/${params.blastdb} \\
-      -max_target_seqs 1000 \\
-      -num_threads $task.cpus \\
-      -outfmt 5 \\
-      -out ${fastaID}_hits.xml
-    """
+    if ( params.blastLocal ) {
+      """
+      blastp -query $inputFasta \\
+        -db $blastDB/${params.blastdb} \\
+        -max_target_seqs 1000 \\
+        -num_threads $task.cpus \\
+        -outfmt 5 \\
+        -out ${fastaID}_hits.xml
+      """
+    } else {
+      """
+      blastp -query $inputFasta \\
+        -db ${params.blastdb} \\
+        -remote \\
+        -max_target_seqs 1000 \\
+        -outfmt 5 \\
+        -out ${fastaID}_hits.xml
+      """
+    }
 }
 
 process PARSE_BLAST {
