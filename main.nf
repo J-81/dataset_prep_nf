@@ -29,7 +29,7 @@ workflow {
   main:
     NR_SCOP_FASTA | set { fasta }
 
-    fasta | disorder \
+    fasta | SEQ_DISORDER \
           | map { it -> [ it[0], it[1] ] } \
           | set { toJoin }
 
