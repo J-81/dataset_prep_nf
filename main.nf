@@ -20,22 +20,8 @@ nextflow.enable.dsl = 2
 
 include { NR_SCOP_FASTA               } from './modules/local/subworkflow/nr_scop_fasta'
 include { IS_SWITCH               } from './modules/local/subworkflow/is_switch'
-include { SEQ_ENTROPY                 } from './modules/local/subworkflow/entropy'
-
-
-// Subworkflow for obtaining disorder propensity
-
-include { ISUNSTRUCT; PARSE_ISUNSTRUCT as PARSE } from './modules/local/process/disorder.nf'
-
-workflow disorder {
-  take: fasta
-  main:
-    ISUNSTRUCT( fasta ) | PARSE
-
-  emit:
-    csv = PARSE.out
-
-}
+include { SEQ_ENTROPY                 } from './modules/local/subworkflow/seq_entropy'
+include { SEQ_DISORDER            } from './modules/local/subworkflow/seq_disorder'
 
 include{ JOIN as JOIN_1; JOIN as JOIN_2; CONCAT; TAG } from './modules/local/process/dataframes.nf'
 
