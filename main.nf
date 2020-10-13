@@ -60,7 +60,7 @@ include{ JOIN as JOIN_1; JOIN as JOIN_2; CONCAT; TAG } from './modules/local/pro
 
 workflow {
   main:
-    scopFasta | set { fasta }
+    NR_SCOP_FASTA | set { fasta }
 
     fasta | disorder \
           | map { it -> [ it[0], it[1] ] } \
