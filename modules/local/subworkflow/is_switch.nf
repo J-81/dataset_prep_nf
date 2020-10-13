@@ -7,6 +7,7 @@ include { OVERLAY_SSDIS;
           ISSWITCH                  } from '../process/isswitch.nf'
 include { SSDIS_REFORMAT            } from '../process/parser.nf'
 include { STRIP_NON_PROTEINS        } from '../process/sequences.nf'
+include { MAP2MSA                   } from '../process/cluster.nf'
 
 
 // TODO sanitize fasta by converting non-cannonical amino acids to canonnical equivalents
