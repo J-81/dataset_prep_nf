@@ -26,8 +26,8 @@ include { SSDIS_REFORMAT } from './modules/local/process/parser.nf'
 
 //include { CAT_FASTQ                   } from './modules/local/process/local/process/cat_fastq'
 
-include { NR_SCOP_FASTA               } from './subworkflows/nr_scop_fasta'
-include { IS_SWITCH               } from './subworkflows/is_switch'
+include { NR_SCOP_FASTA               } from './modules/subworkflows/nr_scop_fasta'
+include { IS_SWITCH               } from './modules/subworkflows/is_switch'
 
 // Subworkflow for obtaining entropy values
 
