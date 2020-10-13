@@ -1,8 +1,8 @@
 nextflow.enable.dsl=2
 
-include { GET_PDBSEQRES; GET_SCOP; EXTRACT_SCOP_PDBIDS } from '../modules/download.nf'
-include { CLUSTER } from '../modules/cluster.nf' addParams(min_seq_id: params.scop_min_seq_id)
-include { EXTRACT_FASTA; STRIP_NON_PROTEINS; EXTRACT_IDS_FROM_CLUSTERTSV; } from '../modules/sequences.nf'
+include { GET_PDBSEQRES; GET_SCOP; EXTRACT_SCOP_PDBIDS } from '.../modules/local/process/download.nf'
+include { CLUSTER } from '.../modules/local/process/cluster.nf' addParams(min_seq_id: params.scop_min_seq_id)
+include { EXTRACT_FASTA; STRIP_NON_PROTEINS; EXTRACT_IDS_FROM_CLUSTERTSV; } from '.../modules/local/process/sequences.nf'
 
 
 // includes limiter for trials and debugging
