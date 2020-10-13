@@ -1,6 +1,15 @@
+nextflow.enable.dsl=2
+
+include { GET_PDBSEQRES;  GET_SSDIS } from '../process/download.nf'
+include { OVERLAY_SSDIS;
+          SSDIS_TOCSV;
+          ISSWITCH } from '../process/isswitch.nf'
+include { SSDIS_REFORMAT } from '../process/parser.nf'
+
+
 // TODO sanitize fasta by converting non-cannonical amino acids to canonnical equivalents
 // TODO add publishdir to final process
-workflow isswitch {
+workflow IS_SWITCH {
   take: fasta
   main:
     GET_PDBSEQRES( params.pdb_seqres_url ) | STRIP_NON_PROTEINS

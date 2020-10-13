@@ -10,15 +10,7 @@
 */
 nextflow.enable.dsl = 2
 
-include { GET_PDBSEQRES;  GET_SCOP; EXTRACT_SCOP_PDBIDS; GET_PDB; GET_SSDIS } from './modules/local/process/download.nf'
-include { CLUSTER2MSA; MAP2MSA } from './modules/local/process/cluster.nf'
-include { STRIP_NON_PROTEINS;
-          EXTRACT_IDS_FROM_CLUSTERTSV; } from './modules/local/process/sequences.nf'
-include { OVERLAY_SSDIS;
-          SSDIS_TOCSV;
-          ISSWITCH } from './modules/local/process/isswitch.nf'
-include { STATS_ON_CLUSTERS } from './modules/local/process/analysis.nf'
-include { SSDIS_REFORMAT } from './modules/local/process/parser.nf'
+// include { STATS_ON_CLUSTERS } from './modules/local/process/analysis.nf'
 
 ////////////////////////////////////////////////////
 /* --    IMPORT LOCAL MODULES/SUBWORKFLOWS     -- */
