@@ -38,15 +38,15 @@ Uses Nextflow version: 20.07.1
 
 ### Run Instructions
 1. Run using defaults of the pipeline, including generating and using a non-redundant scop fasta sequence set.
-> nextflow run J-81/dataset_prep_nf -with-tower
+> nextflow run J-81/dataset_prep_nf -r main -with-tower
 
 1. Use defaults of the pipeline with a custom input fasta.
-> nextflow run J-81/dataset_prep_nf -with-tower --fastaPath {path/to/input/fasta}
+> nextflow run J-81/dataset_prep_nf -r main -with-tower --fastaPath {path/to/input/fasta}
 
 1. Run pipeline using custom configuration file.
 - Copy the defaults configuration file and modify.
 - Location of github: https://github.com/J-81/dataset_prep_nf/raw/main/config/defaults.config
-> nextflow run J-81/dataset_prep_nf -config {path/to/newconfig/file} -with-tower
+> nextflow run J-81/dataset_prep_nf -r main -config {path/to/newconfig/file} -with-tower
 
 ### Other Useful Parameters
 Resume a pipeline where it left off.  Useful in cases where an unexpected failure (perhaps internet connection drops causing remote blast to fail) causes the pipeline to fail.
