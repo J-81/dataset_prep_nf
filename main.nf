@@ -45,23 +45,30 @@ workflow {
           | map { it -> [ it.splitFasta( record: [id:true] ).id[0].substring(0,6), it ] } \
           | set { fasta_single }
 
-
+    if ( !params.skipSeqDisorder ) {
     fasta_single | SEQ_DISORDER \
                  | map { it -> [ it[0], it[1] ] } \
                  | set { toJoin }
+    }
 
+    if ( !params.skipSeqEntropy ) {
     fasta_single | SEQ_ENTROPY  \
                  | map { it -> [ it[0], it[1] ] } \
                  | combine( toJoin, by: 0 ) \
                  | JOIN_1 \
                  | set { toJoin }
+    }
 
+    if ( !params.skipIsSwitch ) {
     fasta_single | IS_SWITCH \
                  | map { it -> [ it[0], it[2] ] } \
                  | combine( toJoin, by: 0 ) \
                  | JOIN_2 \
-                 | set { toConcat }
+                 | set { toJoin }
+    }
 
+    // nothing left to join, now concatenate all datasets
+    toConcat = toJoin
     // Create column about chain and concatate to one dataset
     toConcat | combine( channel.value( "protein" ) ) \
              | map { it -> [ it[2], it[0], it[1] ] } \
