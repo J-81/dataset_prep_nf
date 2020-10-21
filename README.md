@@ -26,12 +26,28 @@ Uses Nextflow version: 20.07.1
   - Follow instructions here: https://tower.nf
 
 ### Test Run Instructions
-- Uses a limited test set of data, should take about 15 minutes for the first time.
-- For the first run, this includes setting up conda environments which may increase runtime by about 10 minutes.
+- Uses a limited test set of data, should take about 20 minutes for the first time.
+- About 15 minutes of first run includes setting up conda environments.  If you have set the conda-cache environment, subsequent runs will not require this 15 minute environment setup step.
 > nextflow run J-81/dataset_prep_nf -profile test
 
+### Using Your Own Fasta Files
+- The header of the file MUST be the following format:
+  - \>xxxx_Y
+  - where xxxx is the 4 letter PDB ID
+  - and Y is the 1 letter Chain ID
 
-### Production Run Instructions
-- A few options are available
-1.
-> nextflow run J-81/dataset_prep_nf -config {path/to/config} -with-tower
+### Run Instructions
+1. Run using defaults of the pipeline, including generating and using a non-redundant scop fasta sequence set.
+> nextflow run J-81/dataset_prep_nf -with-tower
+
+1. Use defaults of the pipeline with a custom input fasta.
+> nextflow run J-81/dataset_prep_nf -with-tower --fastaPath {path/to/input/fasta}
+
+1. Run pipeline using custom configuration file.
+- Copy the defaults configuration file and modify.
+- Location of github: https://github.com/J-81/dataset_prep_nf/raw/main/config/defaults.config
+> nextflow run J-81/dataset_prep_nf -config {path/to/newconfig/file} -with-tower
+
+### Other Useful Parameters
+Resume a pipeline where it left off.  Useful in cases where an unexpected failure (perhaps internet connection drops causing remote blast to fail) causes the pipeline to fail.
+> -resume
