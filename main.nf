@@ -25,25 +25,42 @@ include { SEQ_DISORDER            } from './modules/local/subworkflow/seq_disord
 
 include{ JOIN as JOIN_1; JOIN as JOIN_2; CONCAT; TAG } from './modules/local/process/dataframes.nf'
 
+
+
 workflow {
   main:
+
+    // load fasta if supplied, otherwise generate non-redundant scop
+    if ( params.fastaPath ) {
+    fasta = channel.fromPath( params.fastaPath )
+    fasta | view
+  } else {
+    // generate non-redundant scop
     NR_SCOP_FASTA | set { fasta }
+  }
 
-    fasta | SEQ_DISORDER \
-          | map { it -> [ it[0], it[1] ] } \
-          | set { toJoin }
+    // split into each id, fastaFile tuples from a multifasta file
+    fasta | splitFasta( file: true ) \
+          | take( params.limiter ) \
+          | map { it -> [ it.splitFasta( record: [id:true] ).id[0].substring(0,6), it ] } \
+          | set { fasta_single }
 
-    fasta | SEQ_ENTROPY  \
-          | map { it -> [ it[0], it[1] ] } \
-          | combine( toJoin, by: 0 ) \
-          | JOIN_1 \
-          | set { toJoin }
 
-    fasta | IS_SWITCH \
-          | map { it -> [ it[0], it[2] ] } \
-          | combine( toJoin, by: 0 ) \
-          | JOIN_2 \
-          | set { toConcat }
+    fasta_single | SEQ_DISORDER \
+                 | map { it -> [ it[0], it[1] ] } \
+                 | set { toJoin }
+
+    fasta_single | SEQ_ENTROPY  \
+                 | map { it -> [ it[0], it[1] ] } \
+                 | combine( toJoin, by: 0 ) \
+                 | JOIN_1 \
+                 | set { toJoin }
+
+    fasta_single | IS_SWITCH \
+                 | map { it -> [ it[0], it[2] ] } \
+                 | combine( toJoin, by: 0 ) \
+                 | JOIN_2 \
+                 | set { toConcat }
 
     // Create column about chain and concatate to one dataset
     toConcat | combine( channel.value( "protein" ) ) \
