@@ -17,10 +17,7 @@ workflow NR_SCOP_FASTA {
     // The map closure used returns [id, filepath] tuple
     EXTRACT_FASTA.out.fasta | CLUSTER
 
-    CLUSTER.out.cluster_rep_fasta  | splitFasta( file: true ) \
-                                   | take( params.limiter ) \
-                                   | map { it -> [ it.splitFasta( record: [id:true] ).id[0] , it ] } \
-                                   | set { fasta }
+    CLUSTER.out.cluster_rep_fasta  | set { fasta }
 
   emit:
     fasta
