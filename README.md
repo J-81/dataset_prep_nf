@@ -49,5 +49,13 @@ Uses Nextflow version: 20.07.1
 > nextflow run J-81/dataset_prep_nf -r main -config {path/to/newconfig/file} -with-tower
 
 ### Other Useful Parameters
-Resume a pipeline where it left off.  Useful in cases where an unexpected failure (perhaps internet connection drops causing remote blast to fail) causes the pipeline to fail.
+Skip subworkflows, useful for preparing specific parts of a dataset only.
+- Skip generating IsUnstruct sequence disorder:
+> --skipSeqDisorder
+- Skip generating secondary structure based switch assignments:
+> --skipIsSwitch
+- Skip generating blast alignment based sequence entropy:
+> --skipSeqEntropy
+
+- Resume a pipeline where it left off.  Useful in cases where an unexpected failure (perhaps internet connection drops causing remote blast to fail) causes the pipeline to fail.
 > -resume
