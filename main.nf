@@ -45,14 +45,14 @@ workflow {
           | map { it -> [ it.splitFasta( record: [id:true] ).id[0].substring(0,6), it ] } \
           | set { fasta_single }
 
-    if ( !params.skipSeqDisorder ) {
-    fasta_single | SEQ_DISORDER \
+    if ( !params.skipSeqEntropy ) {
+    fasta_single | SEQ_ENTROPY  \
                  | map { it -> [ it[0], it[1] ] } \
                  | set { toJoin }
     }
 
-    if ( !params.skipSeqEntropy ) {
-    fasta_single | SEQ_ENTROPY  \
+    if ( !params.skipSeqDisorder ) {
+    fasta_single | SEQ_DISORDER \
                  | map { it -> [ it[0], it[1] ] } \
                  | combine( toJoin, by: 0 ) \
                  | JOIN_1 \
