@@ -1,4 +1,5 @@
 #!/usr/bin/env nextflow
+import static groovy.json.JsonOutput.*
 /*
 ========================================================================================
                          J-81/dataset_prep_nf
@@ -8,7 +9,27 @@
  https://github.com/J-81/dataset_prep_nf
 ----------------------------------------------------------------------------------------
 */
+// color defs
+c_back_bright_red = "\u001b[41;1m";
+c_bright_green = "\u001b[32;1m";
+c_blue = "\033[0;34m";
+c_reset = "\033[0m";
+
 nextflow.enable.dsl = 2
+
+
+if (params.help) {
+  println(c_bright_green)
+  println("┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅")
+  println("┇ Dataset Preparation: $workflow.manifest.version        ┇")
+  println("┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅┅")
+  println(c_reset)
+  println "PARAMS: ${ prettyPrint(toJson(params)) }"
+  exit 0
+  }
+
+println "PARAMS: ${ prettyPrint(toJson(params)) }"
+println "\n"
 
 // include { STATS_ON_CLUSTERS } from './modules/local/process/analysis.nf'
 
@@ -33,7 +54,7 @@ workflow {
     // load fasta if supplied, otherwise generate non-redundant scop
     if ( params.fastaPath ) {
     fasta = channel.fromPath( params.fastaPath )
-    fasta | view
+    // fasta | view 
   } else {
     // generate non-redundant scop
     NR_SCOP_FASTA | set { fasta }
@@ -54,9 +75,8 @@ workflow {
     if ( !params.skipSeqEntropy ) {
     fasta_single | SEQ_ENTROPY  \
                  | map { it -> [ it[0], it[1] ] } \
-                 | combine( toJoin, by: 0 ) \
-                 | JOIN_1 \
-                 | set { toJoin }
+                 | view \
+                 | set { ch_entropy }
     }
 
     if ( !params.skipIsSwitch ) {
@@ -66,7 +86,7 @@ workflow {
                  | JOIN_2 \
                  | set { toJoin }
     }
-
+    /*
     // nothing left to join, now concatenate all datasets
     toConcat = toJoin
     // Create column about chain and concatate to one dataset
@@ -75,7 +95,5 @@ workflow {
              | TAG \
              | toList \
              | CONCAT
-
-
-
+    */
 }

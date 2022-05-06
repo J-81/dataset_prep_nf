@@ -4,6 +4,7 @@ process GET_BLAST_DB {
 
   output:
     path "${params.blastdb}", emit: blastDB
+    path "README.md", emit: readmeBlastDB
 
   script:
     """
@@ -12,7 +13,12 @@ process GET_BLAST_DB {
     update_blastdb.pl --source ncbi \\
       --decompress \\
       --blastdb_version 5 \\
-      $params.blastdb
+      ${params.blastdb}
+
+    # back to root work dir
+    cd -
+
+    echo "Download Date: \$(date)" >> README.md
     """
 }
 
@@ -69,6 +75,7 @@ process PARSE_BLAST {
  */
 
 process ENTROPY {
+  publishDir "EntropyTables"
   conda "${baseDir}/envs/scipy1.yml"
 
   input:
